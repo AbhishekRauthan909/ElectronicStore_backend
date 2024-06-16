@@ -17,7 +17,8 @@ public class UserDto {
     @Size(min=3,max=35,message="Invalid name !!!")
     private String name;
 
-    @NotBlank(message ="Please enter valid password!!!")
+    @NotBlank(message ="Please enter some valid password!!!")
+    @Size(max=10,message="Your password length exceeding!!!")
     private String password;
 
     @Pattern(regexp="^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",message="Invalid email !!!")
