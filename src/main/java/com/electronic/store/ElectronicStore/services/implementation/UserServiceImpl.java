@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService
         //first we will generate the id
         String userId= UUID.randomUUID().toString();
         userDto.setUserId(userId);
-    //first we will convert userDto to entity
+        //first we will convert userDto to entity
         User user=dtoToEntity(userDto);
         User savedUser=userRepository.save(user);
         UserDto tempDto=entityToDto(savedUser);
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService
         return mapper.map(user,UserDto.class);
     }
 
-    private User dtoToEntity(UserDto userDto) 
+    private User dtoToEntity(UserDto userDto)
     {
         return mapper.map(userDto,User.class);
     }
@@ -75,17 +75,17 @@ public class UserServiceImpl implements UserService
     public void deleteUser(String userId){
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found for the given id"));
         String fullPath=imagePath+user.getImageName();
-       try
-       {
-           Path path=Paths.get(fullPath);
-           Files.delete(path);
-       } catch(NoSuchFileException ex)
+        try
+        {
+            Path path=Paths.get(fullPath);
+            Files.delete(path);
+        } catch(NoSuchFileException ex)
         {
             ex.printStackTrace();
         } catch(IOException io)
-       {
-           io.printStackTrace();
-       }
+        {
+            io.printStackTrace();
+        }
         userRepository.delete(user);
     }
 
@@ -101,8 +101,8 @@ public class UserServiceImpl implements UserService
     @Override
     public UserDto getUserById(String userId)
     {
-       User user= userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found for given Id"));
-       UserDto tempDto=entityToDto(user);
+        User user= userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found for given Id"));
+        UserDto tempDto=entityToDto(user);
         return tempDto;
     }
 
