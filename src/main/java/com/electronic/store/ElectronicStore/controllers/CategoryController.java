@@ -1,11 +1,13 @@
 package com.electronic.store.ElectronicStore.controllers;
 import com.electronic.store.ElectronicStore.dtos.CategoryDto;
 import com.electronic.store.ElectronicStore.dtos.PageableResponse;
+import com.electronic.store.ElectronicStore.dtos.ProductDto;
 import com.electronic.store.ElectronicStore.dtos.UserDto;
 import com.electronic.store.ElectronicStore.payload.ApiResponseMessage;
 import com.electronic.store.ElectronicStore.payload.ImageResponse;
 import com.electronic.store.ElectronicStore.services.CategoryService;
 import com.electronic.store.ElectronicStore.services.FileService;
+import com.electronic.store.ElectronicStore.services.ProductService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class CategoryController
 
     @Value("${category.profile.image.path}")
     private String imageUploadPath;
+
+    @Autowired
+    private ProductService productService;
 
     @PostMapping
     public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto)
@@ -108,5 +113,33 @@ public class CategoryController
                 .status(HttpStatus.OK)
                 .build();
         return new ResponseEntity<>(message,HttpStatus.OK);
+    }
+
+    @PostMapping("/{categoryId}/products")
+    public ResponseEntity<ProductDto> createProductWithCategory(@PathVariable String categoryId,
+                                                                @RequestBody ProductDto productDto)
+    {
+        ProductDto productWithCategory=productService.createWithCategory(productDto,categoryId);
+        return new ResponseEntity<>(productWithCategory,HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{categoryId}/products/{productId}")
+    public ResponseEntity<ProductDto> updateCategoryOfProduct(@PathVariable String categoryId,@PathVariable String productId)
+    {
+        ProductDto productDto=productService.updateCategory(productId,categoryId);
+        return new ResponseEntity<>(productDto,HttpStatus.OK);
+    }
+
+    @GetMapping("/products/{categoryId}")
+    public ResponseEntity<PageableResponse<ProductDto>> getProductsofCategory(
+            @PathVariable String categoryId,
+            @RequestParam(value="pageNumber",defaultValue ="0",required = false) int pageNumber,
+            @RequestParam(value="pageSize",defaultValue = "10",required = false) int pageSize,
+            @RequestParam(value="sortBy",defaultValue = "title",required = false) String sortBy,
+            @RequestParam(value="sortDir",defaultValue = "ASC",required = false) String sortDir
+    )
+    {
+        PageableResponse<ProductDto> response=productService.getCategoryProduct(categoryId,pageNumber,pageSize,sortBy,sortDir);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }
