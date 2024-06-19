@@ -1,9 +1,6 @@
 package com.electronic.store.ElectronicStore.services.implementation;
 import com.electronic.store.ElectronicStore.dtos.*;
-import com.electronic.store.ElectronicStore.entities.Cart;
-import com.electronic.store.ElectronicStore.entities.CartItem;
-import com.electronic.store.ElectronicStore.entities.Products;
-import com.electronic.store.ElectronicStore.entities.User;
+import com.electronic.store.ElectronicStore.entities.*;
 import com.electronic.store.ElectronicStore.exceptions.BadApiRequest;
 import com.electronic.store.ElectronicStore.exceptions.ResourceNotFoundException;
 import com.electronic.store.ElectronicStore.repositories.CartItemRepository;
@@ -63,7 +60,7 @@ public class CartServiceImpl implements CartService
         }
         AtomicBoolean flag= new AtomicBoolean(true);
         List<CartItem> items=cart.getItems();
-        List<CartItem> updateItem=items.stream().map(item->
+        items=items.stream().map(item->
         {
             if(item.getProduct().getProductId().equals(request.getProductId()))
             {
@@ -73,8 +70,6 @@ public class CartServiceImpl implements CartService
             }
             return item;
         }).collect(Collectors.toList());
-
-
         if(flag.get())
         {
             CartItem newItem=CartItem.builder()
@@ -84,10 +79,6 @@ public class CartServiceImpl implements CartService
                     .product(product)
                     .build();
             cart.getItems().add(newItem);
-        }
-        else
-        {
-            cart.setItems(updateItem);
         }
         cart.setUser(user);
         Cart updateCart=cartRepository.save(cart);
@@ -116,9 +107,33 @@ public class CartServiceImpl implements CartService
 
     private ProductDto mapProductToDto(Products product)
     {
-        return mapper.map(product,ProductDto.class);
+        ProductDto productDto=new ProductDto();
+        productDto.setProductId(product.getProductId());
+        productDto.setLive(product.isLive());
+        productDto.setAddedDate(product.getAddedDate());
+        productDto.setCategory(mapCategoryToDto(product.getCategory()));
+        productDto.setQuantity(product.getQuantity());
+        productDto.setDescription(product.getDescription());
+        productDto.setStock(product.isStock());
+        productDto.setDiscountedPrice(product.getDiscountedPrice());
+        productDto.setTitle(product.getTitle());
+        productDto.setPrice(product.getPrice());
+        productDto.setImageName(product.getImageName());
+        return productDto;
     }
-
+    private CategoryDto mapCategoryToDto(Category category)
+    {
+        CategoryDto categoryDto=new CategoryDto();
+        if(category==null)
+        {
+            return null;
+        }
+        categoryDto.setCategoryId(category.getCategoryId());
+        categoryDto.setCoverImage(category.getCoverImage());
+        categoryDto.setTitle(category.getTitle());
+        categoryDto.setDescription(category.getDescription());
+        return categoryDto;
+    }
     private UserDto mapUserToDto(User user)
     {
         UserDto userDto=new UserDto();

@@ -1,11 +1,9 @@
 package com.electronic.store.ElectronicStore.entities;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -27,7 +25,8 @@ public class Products
     private boolean live;
     private boolean stock;
     private String imageName;
-
     @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
+    @OneToMany(mappedBy ="products")
+    private List<OrderItems> orderItems=new ArrayList<>();
 }
