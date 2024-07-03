@@ -1,9 +1,11 @@
 package com.electronic.store.ElectronicStore.services.implementation;
 import com.electronic.store.ElectronicStore.dtos.PageableResponse;
 import com.electronic.store.ElectronicStore.dtos.UserDto;
+import com.electronic.store.ElectronicStore.entities.Role;
 import com.electronic.store.ElectronicStore.entities.User;
 import com.electronic.store.ElectronicStore.exceptions.ResourceNotFoundException;
 import com.electronic.store.ElectronicStore.helper.Helper;
+import com.electronic.store.ElectronicStore.repositories.RoleRepository;
 import com.electronic.store.ElectronicStore.repositories.UserRepository;
 import com.electronic.store.ElectronicStore.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -37,13 +40,24 @@ public class UserServiceImpl implements UserService
     @Value("${user.profile.image.path}")
     private String imagePath;
 
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto)
+    {
         //first we will generate the id
         String userId= UUID.randomUUID().toString();
         userDto.setUserId(userId);
         //first we will convert userDto to entity
         User user=dtoToEntity(userDto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Role role=roleRepository.findByName("ROLE_USER");
+        user.setRoles(List.of(role));
         User savedUser=userRepository.save(user);
         UserDto tempDto=entityToDto(savedUser);
         return tempDto;

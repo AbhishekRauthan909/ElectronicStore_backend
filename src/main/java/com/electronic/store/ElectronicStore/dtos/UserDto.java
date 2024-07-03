@@ -1,10 +1,13 @@
 package com.electronic.store.ElectronicStore.dtos;
+import com.electronic.store.ElectronicStore.entities.Role;
 import com.electronic.store.ElectronicStore.validate.ImageNameValid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,7 +21,7 @@ public class UserDto {
     private String name;
 
     @NotBlank(message ="Please enter some valid password!!!")
-    @Size(max=10,message="Your password length exceeding!!!")
+    @Size(max=1000,message="Your password length exceeding!!!")
     private String password;
 
     @Pattern(regexp="^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",message="Invalid email !!!")
@@ -33,4 +36,9 @@ public class UserDto {
 
     @ImageNameValid
     private String imageName;
+
+
+    private List<RoleDto> roles;
+
+
 }
