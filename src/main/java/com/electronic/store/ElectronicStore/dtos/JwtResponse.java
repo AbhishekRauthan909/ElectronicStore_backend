@@ -1,5 +1,4 @@
 package com.electronic.store.ElectronicStore.dtos;
-
 import lombok.*;
 
 @Getter
@@ -11,6 +10,5 @@ public class JwtResponse
 {
     private String token;
     UserDto user;
-
     private String refreshToken;
 }

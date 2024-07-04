@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -56,13 +57,24 @@ public class UserServiceImpl implements UserService
         //first we will convert userDto to entity
         User user=dtoToEntity(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Role role=roleRepository.findByName("ROLE_USER");
-        user.setRoles(List.of(role));
+        if(userDto.getRoles()!=null)
+        {
+            Role simple=roleRepository.findByName("ROLE_ADMIN");
+            Role admin=roleRepository.findByName("ROLE_USER");
+            List<Role> roles = new ArrayList<>();
+            roles.add(simple);
+            roles.add(admin);
+            user.setRoles(roles);
+        }
+        else
+        {
+            Role role=roleRepository.findByName("ROLE_USER");
+            user.setRoles(List.of(role));
+        }
         User savedUser=userRepository.save(user);
         UserDto tempDto=entityToDto(savedUser);
         return tempDto;
     }
-
     private UserDto entityToDto(User user)
     {
         return mapper.map(user,UserDto.class);
@@ -119,14 +131,12 @@ public class UserServiceImpl implements UserService
         UserDto tempDto=entityToDto(user);
         return tempDto;
     }
-
     @Override
     public UserDto getUserByEmail(String email) {
         User user=userRepository.findByEmail(email).orElseThrow(()->new ResourceNotFoundException("User not found for given email"));
         UserDto userDto=entityToDto(user);
         return userDto;
     }
-
     @Override
     public List<UserDto> searchUser(String keyword)
     {
